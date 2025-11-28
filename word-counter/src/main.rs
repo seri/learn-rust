@@ -1,5 +1,6 @@
 use std::env;
-use std::fs;
+use std::fs::File;
+use std::io::{BufRead, BufReader};
 use std::process;
 
 fn main() {
@@ -11,11 +12,19 @@ fn main() {
     }
 
     let filename = &args[1];
-    match fs::read_to_string(filename) {
-        Ok(text) => println!("{} words", text.split_whitespace().count()),
-        Err(err) => {
-            eprintln!("Error reading filename {}: {}", filename, err);
-            process::exit(1)
+    let file = File::open(filename).unwrap_or_else(|err| {
+        eprintln!("Error reading filename {}: {}", filename, err);
+        process::exit(1);
+    });
+
+    let reader = BufReader::new(file);
+    let mut count: usize = 0;
+
+    for line_result in reader.lines() {
+        if let Ok(line) = line_result {
+            count += line.split_whitespace().count();
         }
     }
+
+    println!("{} words", count);
 }
