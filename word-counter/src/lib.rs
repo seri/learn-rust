@@ -13,14 +13,10 @@ impl<'a> Iterator for SplitIterator<'a> {
     type Item = &'a str;
 
     fn next(&mut self) -> Option<Self::Item> {
-        if self.pos >= self.s.len() {
-            return None;
-        }
-
         let bytes = self.s.as_bytes();
 
-        let mut start = self.pos;
-        for i in start..bytes.len() {
+        let mut start = bytes.len();
+        for i in self.pos..bytes.len() {
             if !bytes[i].is_ascii_whitespace() {
                 start = i;
                 break;
@@ -28,11 +24,15 @@ impl<'a> Iterator for SplitIterator<'a> {
         }
 
         let mut end = self.s.len();
-        for i in start..bytes.len() {
+        for i in (start + 1)..bytes.len() {
             if bytes[i].is_ascii_whitespace() {
                 end = i;
                 break;
             }
+        }
+
+        if end <= start {
+            return None;
         }
 
         let res = Some(&self.s[start..end]);
@@ -55,5 +55,46 @@ mod tests {
         let mut iter = split(s);
 
         assert_eq!(iter.next(), Some("hello"));
+        assert_eq!(iter.next(), Some("world"));
+        assert_eq!(iter.next(), Some("rust"));
+        assert_eq!(iter.next(), None);
+    }
+
+    #[test]
+    fn test_multiple_whitespaces() {
+        let s = "hello  world    rust";
+        let mut iter = split(s);
+
+        assert_eq!(iter.next(), Some("hello"));
+        assert_eq!(iter.next(), Some("world"));
+        assert_eq!(iter.next(), Some("rust"));
+        assert_eq!(iter.next(), None);
+    }
+
+    #[test]
+    fn test_ending_white_spaces() {
+        let s = "hello world rust ";
+        let mut iter = split(s);
+
+        assert_eq!(iter.next(), Some("hello"));
+        assert_eq!(iter.next(), Some("world"));
+        assert_eq!(iter.next(), Some("rust"));
+        assert_eq!(iter.next(), None);
+    }
+
+    #[test]
+    fn test_empty_string() {
+        let s = "";
+        let mut iter = split(s);
+
+        assert_eq!(iter.next(), None);
+    }
+
+    #[test]
+    fn test_only_whitespaces() {
+        let s = "   ";
+        let mut iter = split(s);
+
+        assert_eq!(iter.next(), None);
     }
 }
