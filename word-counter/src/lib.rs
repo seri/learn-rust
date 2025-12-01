@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 pub struct SplitIterator<'a> {
     s: &'a str,
     pos: usize,
@@ -43,6 +45,18 @@ impl<'a> Iterator for SplitIterator<'a> {
 
 pub fn split(s: &str) -> impl Iterator<Item = &str> {
     SplitIterator::new(s)
+}
+
+pub fn count_words<I, S>(words: I) -> HashMap<String, usize>
+where
+    I: IntoIterator<Item = S>,
+    S: AsRef<str>,
+{
+    let mut res = HashMap::new();
+    for word in words {
+        *res.entry(word.as_ref().to_string()).or_insert(0) += 1;
+    }
+    return res;
 }
 
 #[cfg(test)]
