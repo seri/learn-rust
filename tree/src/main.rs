@@ -16,19 +16,17 @@ fn read_dir_safe(path: &Path) -> Option<ReadDir> {
     None
 }
 
-// const BLACKLISTED: [&'static str; 2] = ["target", ".git"];
+const BLACKLISTED: [&'static str; 2] = ["target", ".git"];
 
 fn print_tree(path: &Path, depth: usize) {
     if let Some(basename) = path.file_name().map(|x| x.to_string_lossy()) {
-        // if BLACKLISTED.contains(&basename.as_ref()) {
-        //     return;
-        // }
+        if BLACKLISTED.contains(&basename.as_ref()) {
+            return;
+        }
         for _ in 0..(depth + 1) {
             print!("|    ");
         }
         println!("{}", basename);
-    } else {
-        return;
     }
 
     if let Some(entries) = read_dir_safe(path) {
