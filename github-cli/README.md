@@ -1,0 +1,3 @@
+- https://github.com/settings/personal-access-tokens
+- export GITHUB_TOKEN=abcdef
+- cargo run

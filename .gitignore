@@ -1,2 +1,5 @@
 word-counter/target
 tree/target
+github-cli/target/debug
+github-cli/target
+.envrc
