@@ -27,6 +27,21 @@ impl<T: PartialOrd> BinaryTree<T> {
             }
         }
     }
+
+    fn contains(&self, elem: T) -> bool {
+        match self {
+            BinaryTree::Empty => false,
+            BinaryTree::Node { value, left, right } => {
+                if elem < *value {
+                    left.contains(elem)
+                } else if elem > *value {
+                    right.contains(elem)
+                } else {
+                    true
+                }
+            }
+        }
+    }
 }
 
 fn main() {
@@ -35,4 +50,12 @@ fn main() {
     tree.add(1);
     tree.add(3);
     println!("{:?}", tree);
+
+    let mut tree2: BinaryTree<&str> = BinaryTree::Empty;
+    tree2.add("bbb");
+    tree2.add("ccc");
+    tree2.add("aaa");
+    println!("{:?}", tree2);
+    println!("{:?}", tree2.contains("ddd"));
+    println!("{:?}", tree2.contains("aaa"));
 }
