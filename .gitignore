@@ -3,3 +3,4 @@ tree/target
 github-cli/target/debug
 github-cli/target
 .envrc
+binary-tree/target
