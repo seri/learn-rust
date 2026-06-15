@@ -4,3 +4,4 @@ github-cli/target/debug
 github-cli/target
 .envrc
 binary-tree/target
+simple-html-extractor/target
