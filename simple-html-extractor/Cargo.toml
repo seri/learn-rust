@@ -5,5 +5,6 @@ edition = "2024"
 
 [dependencies]
 html5ever = "0.39.0"
+html5gum = "0.8.3"
 markup5ever_rcdom = "0.39.0"
 reqwest = { version = "0.13.4", features = ["blocking"] }
