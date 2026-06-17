@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+clap = { version = "4.6.1", features = ["derive"] }
 html5ever = "0.39.0"
 html5gum = "0.8.3"
 markup5ever_rcdom = "0.39.0"
