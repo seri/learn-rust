@@ -1,5 +1,6 @@
 use clap::{Parser, ValueEnum};
 use std::sync::Arc;
+use std::sync::mpsc;
 use std::thread;
 use std::time::Instant;
 
@@ -8,6 +9,7 @@ mod rcdom_scraper;
 mod types;
 
 const DEFAULT_PAGE_COUNT: i32 = 5;
+const PAGE_SIZE: usize = 30;
 
 #[derive(Debug, Clone, Copy, ValueEnum)]
 enum ScraperChoice {
@@ -32,12 +34,12 @@ struct Args {
 
 fn scrape_page(
     scraper: Arc<dyn types::Scraper>,
+    sender: mpsc::Sender<Vec<types::Article>>,
     page: i32,
 ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let url = format!("https://news.ycombinator.com/?p={}", page);
     let html = reqwest::blocking::get(&url)?.text()?;
-    let articles = scraper.scrape(&html)?;
-    println!("{:?}", articles);
+    let _ = sender.send(scraper.scrape(&html)?);
     Ok(())
 }
 
@@ -50,17 +52,24 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     };
     println!("== Using {}", scraper.name());
 
-    let mut handles = Vec::with_capacity(pages as usize);
+    let timer = Instant::now();
+    let (sender, receiver) = mpsc::channel::<Vec<types::Article>>();
 
     for page in 1..=pages {
         let thread_scraper = scraper.clone();
-        let handle = thread::spawn(move || scrape_page(thread_scraper, page));
-        handles.push(handle);
+        let thread_sender = sender.clone();
+        thread::spawn(move || scrape_page(thread_scraper, thread_sender, page));
     }
 
-    for handle in handles {
-        let _ = handle.join().unwrap();
+    drop(sender);
+
+    let mut all_articles = Vec::with_capacity(PAGE_SIZE * (pages as usize));
+    for articles in receiver {
+        all_articles.extend(articles);
     }
+
+    let elapsed = timer.elapsed().as_millis();
+    println!("== Scraped {} articles in {}ms", all_articles.len(), elapsed);
 
     Ok(())
 }
