@@ -9,12 +9,12 @@ impl crate::types::Scraper for GumScraper {
         "gum_scraper"
     }
 
-    fn scrape(&self, html: &str) -> Result<Vec<Article>, Box<dyn std::error::Error>> {
+    fn scrape(&self, html: &str) -> Result<Vec<Article>, Box<dyn std::error::Error + Send + Sync>> {
         scrape(html)
     }
 }
 
-fn scrape(html: &str) -> Result<Vec<Article>, Box<dyn std::error::Error>> {
+fn scrape(html: &str) -> Result<Vec<Article>, Box<dyn std::error::Error + Send + Sync>> {
     let mut in_title_wrapper = false;
     let mut in_title_anchor = false;
     let mut extracted_url = String::with_capacity(128);

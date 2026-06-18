@@ -15,12 +15,12 @@ impl crate::types::Scraper for RcdomScraper {
         "rcdom_scraper"
     }
 
-    fn scrape(&self, html: &str) -> Result<Vec<Article>, Box<dyn std::error::Error>> {
+    fn scrape(&self, html: &str) -> Result<Vec<Article>, Box<dyn std::error::Error + Send + Sync>> {
         scrape(html)
     }
 }
 
-fn scrape(html: &str) -> Result<Vec<Article>, Box<dyn std::error::Error>> {
+fn scrape(html: &str) -> Result<Vec<Article>, Box<dyn std::error::Error + Send + Sync>> {
     let mut result: Vec<Article> = vec![];
 
     let options = ParseOpts {

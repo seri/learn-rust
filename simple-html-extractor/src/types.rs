@@ -4,7 +4,7 @@ pub struct Article {
     pub url: String,
 }
 
-pub trait Scraper {
+pub trait Scraper: Send + Sync {
     fn name(&self) -> &'static str;
-    fn scrape(&self, html: &str) -> Result<Vec<Article>, Box<dyn std::error::Error>>;
+    fn scrape(&self, html: &str) -> Result<Vec<Article>, Box<dyn std::error::Error + Send + Sync>>;
 }
