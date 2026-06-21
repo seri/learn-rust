@@ -5,3 +5,5 @@ github-cli/target
 .envrc
 binary-tree/target
 simple-html-extractor/target
+bittorrent-client/target
+hn-scraper/target
