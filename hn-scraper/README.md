@@ -6,4 +6,5 @@ Featuring:
 - Trait objects.
 - A thread pool without an external crate.
 - Channel (similar to Go's).
+- Async, and compare async vs OS threads for an I/O heavy workload.
 - CLI arguments parsing with clap.
